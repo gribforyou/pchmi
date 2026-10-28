@@ -58,7 +58,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: mobile
-        run: npm install
+        run: npm ci
 
       - name: Build (Expo web export)
         working-directory: mobile
