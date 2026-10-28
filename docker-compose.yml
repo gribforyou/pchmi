@@ -1,11 +1,3 @@
-# ── Docker Compose — окружение разработки «Hello World» ─────────────────────
-# Поднимает backend (FastAPI) и frontend (Next.js) в контейнерах.
-#
-# Запуск:   docker compose up --build
-# Frontend: http://localhost:3000
-# Backend:  http://localhost:8000  (Swagger UI: /docs)
-# Останов:  docker compose down
-
 services:
 
   # ── Backend (FastAPI «Hello World») ────────────────────────────────────────
