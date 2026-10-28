@@ -1,0 +1,37 @@
+@startuml
+'
+' Контекстная диаграмма инфраструктуры «Умный Календарь»
+' (п. 7 задания 6 — уточнение диаграммы из лабораторной работы 3)
+'
+!theme plain
+
+title Инфраструктура проекта «Умный Календарь» — системный контекст
+
+actor "Пользователь" as User
+
+rectangle "DevOps-окружение" {
+    cloud "GitHub" {
+        rectangle "Репозитории" as GH
+        rectangle "GitHub Actions\n(CI/CD)" as CICD
+        rectangle "Projects\n(управление задачами)" as GHProj
+    }
+}
+
+rectangle "Продакшн-окружение (облако)" {
+    rectangle "Backend (FastAPI)\nконтейнер Docker" as BE
+    rectangle "Frontend (Next.js)\nконтейнер Docker" as FE
+    rectangle "Mobile (React Native)\nконтейнер/Expo" as MO
+    database "PostgreSQL" as DB
+}
+
+User --> FE : HTTPS
+User --> MO : HTTPS /app
+User --> BE : HTTPS /api
+FE --> BE : REST API (JSON)
+MO --> BE : REST API (JSON)
+BE --> DB : SQL
+
+CICD --> BE : сборка, тесты, деплой
+CICD --> FE : сборка, тесты, деплой
+
+@enduml

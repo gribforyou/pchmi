@@ -1,0 +1,35 @@
+@startuml
+'
+' Диаграмма развёртывания (деплоймент) и CI/CD pipeline
+' (п. 13 задания 6)
+'
+!theme plain
+
+title Развёртывание и непрерывная интеграция
+
+rectangle "GitHub" {
+    rectangle "Git-репозиторий\n(branches: main=production, develop=development)" as Repo
+    rectangle "GitHub Actions" as Actions {
+        rectangle "Job: test" as JTest
+        rectangle "Job: sonarqube" as JSonar
+        rectangle "Job: build + swagger" as JBuild
+        rectangle "Job: deploy" as JDeploy
+    }
+    rectangle "Projects\n(планирование задач)" as Proj
+}
+
+Repo --> JTest : push (develop/main)
+JTest --> JSonar : тесты прошли
+JSonar --> JBuild : качество ок
+JBuild --> JDeploy : образ собран
+
+rectangle "Render.com (бесплатный тариф)" {
+    rectangle "Web Service: backend\n(Docker-контейнер)" as RenderBE
+    database "PostgreSQL (managed)" as RenderDB
+    RenderBE --> RenderDB
+}
+
+JDeploy --> RenderBE : docker push + deploy
+User --> RenderBE : HTTPS /api, /docs
+
+@enduml

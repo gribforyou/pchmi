@@ -1,0 +1,44 @@
+# ── Docker Compose — окружение разработки «Hello World» ─────────────────────
+# Поднимает backend (FastAPI) и frontend (Next.js) в контейнерах.
+#
+# Запуск:   docker compose up --build
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:8000  (Swagger UI: /docs)
+# Останов:  docker compose down
+
+services:
+
+  # ── Backend (FastAPI «Hello World») ────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hello_backend
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health', timeout=3).status==200 else 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Frontend (Next.js «Hello World») ───────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hello_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ── Mobile (React Native / Expo web «Hello World») ────────────────────────
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: Dockerfile
+    container_name: hello_mobile
+    ports:
+      - "8081:80"

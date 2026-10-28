@@ -1,0 +1,59 @@
+@startuml
+'
+' Контейнерная диаграмма Docker-инфраструктуры бекенд и веб-приложения
+' (п. 7 задания 6). Уточнённая диаграмма из лабораторной работы 3.
+'
+!theme plain
+
+title Инфраструктура Docker — контейнеры бекенд и веб-приложения
+
+actor "Пользователь" as User
+
+rectangle "Docker-хост (localhost / облако)" {
+
+    rectangle "frontend\n(контейнер)" as FE {
+        component "Next.js 14\n(React / SSR)" as Next
+    }
+
+    rectangle "mobile\n(контейнер)" as MO {
+        component "React Native / Expo\n(web + native)" as RN
+    }
+
+    rectangle "backend\n(контейнер)" as BE {
+        component "uvicorn" as Uv
+        component "FastAPI\n(REST API)" as API
+    }
+
+    database "postgres\n(контейнер)" as DB {
+        component "PostgreSQL 16" as PG
+    }
+
+    FE -- BE : HTTP :8000\nREST API (JSON)
+    MO -- BE : HTTP :8000\nREST API (JSON)
+    BE -- DB : :5432\nSQL (SQLAlchemy)
+}
+
+User --> FE : HTTP :3000
+User --> MO : HTTP :8081 (web) / Expo (native)
+User --> BE : HTTP :8000\n/api, /docs (Swagger)
+
+note bottom of FE
+  Собирается из frontend/Dockerfile
+  (multi-stage, standalone Next.js)
+end note
+
+note bottom of MO
+  Собирается из mobile/Dockerfile
+  (web-версия, раздача через nginx)
+end note
+
+note bottom of BE
+  Собирается из backend/Dockerfile
+  (FastAPI + uvicorn)
+end note
+
+note bottom of DB
+  Данные хранятся в volume postgres_data
+end note
+
+@enduml
